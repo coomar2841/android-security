@@ -6,20 +6,19 @@ import android.content.SharedPreferences
 class Prefs(context: Context){
     val prefs: SharedPreferences = context.getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE)
 
-    fun saveCredentials(username: String, password: String, token: String){
+    fun setKeyGenerated(value: Boolean){
         prefs.edit()
-            .putString(KEY_USERNAME, username)
-            .putString(KEY_PASSWORD, password)
-            .putString(KEY_TOKEN, token)
+            .putBoolean(KEY_GENERATED, value)
             .apply()
+    }
+
+    fun isKeyGenerated(): Boolean{
+        return prefs.getBoolean(KEY_GENERATED, false)
     }
 
     companion object {
 
         val FILE_NAME = "preferences"
-
-        val KEY_USERNAME = "key_username"
-        val KEY_PASSWORD = "key_password"
-        val KEY_TOKEN = "key_token"
+        val KEY_GENERATED = "key_key_generated"
     }
 }

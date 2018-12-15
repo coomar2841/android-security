@@ -1,30 +1,49 @@
 package com.kbeanie.securityandroid
 
-import android.nfc.Tag
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import kotlinx.android.synthetic.main.credentials_activity.*
 
 class CredentialsActivity : AppCompatActivity() {
 
     private val TAG = CredentialsActivity::class.java.simpleName
 
+    private lateinit var prefs: Prefs
+    private var username = "";
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.credentials_activity)
 
-        generateAssymetricKey()
+        prefs = Prefs(this)
+
+        // Check if a secret key is generated already
+        if (!prefs.isKeyGenerated()) {
+            generateAssymetricKey()
+            prefs.setKeyGenerated(true)
+        }
+
+        btnLogin.setOnClickListener {
+            username = etUsername.text.toString()
+            encrypt(username)
+        }
+        btnDecrypt.setOnClickListener {
+            decrypt()
+        }
     }
 
+    // Generates a secret key in the keystore
     private fun generateAssymetricKey() {
-        SymmetricEncryptor().generateSymmetricKey("MySecuredApp")
+        SymmetricCryptography().generateSymmetricKey(Constants.KEYSTORE_ALIAS)
+    }
 
-//        var key = SymmetricEncryptor().getAsymmetricKey("MySecuredApp")
-//        Log.i(TAG, "Key retrieved: " + key.toString())
+    private fun encrypt(username: String) {
+        val encryptedUsername = SymmetricCryptography().encryptDataAsymmetric(Constants.KEYSTORE_ALIAS, username)
+        tvUsername.setText(encryptedUsername)
+    }
 
-        val encrypted = SymmetricEncryptor().encryptDataAsymmetric("MySecuredApp", "Kumar")
-        Log.i(TAG, "Encrypted: ${encrypted}, Actual: Kumar")
-        val decrypted = SymmetricEncryptor().decryptDataAsymmetric("MySecuredApp", encrypted)
-        Log.i(TAG, "Decrypted: ${decrypted}, Actual: ${encrypted}")
+    private fun decrypt() {
+        val username = SymmetricCryptography().decryptDataAsymmetric(Constants.KEYSTORE_ALIAS, username)
+        tvUsername.setText(username)
     }
 }

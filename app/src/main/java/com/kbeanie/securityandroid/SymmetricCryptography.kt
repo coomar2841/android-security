@@ -11,9 +11,10 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
-class SymmetricEncryptor {
+class SymmetricCryptography {
     val keystore: KeyStore = initializeKeystore()
 
+    // Initialized the KeyStore
     fun initializeKeystore(): KeyStore {
         // There could be many keystore providers.
         // We are interested in AndroidKeyStore
@@ -52,6 +53,7 @@ class SymmetricEncryptor {
         return null
     }
 
+    // No error handling is done here
     fun encryptDataAsymmetric(alias: String, data: String): String {
         var key = getAsymmetricKey(alias)
         var plainTextByteArray = data.toByteArray(Charset.defaultCharset())
@@ -69,6 +71,7 @@ class SymmetricEncryptor {
                 Base64.getEncoder().encodeToString(cipher.iv)
     }
 
+    // No error handling is done here
     fun decryptDataAsymmetric(alias: String, data: String): String {
         var key = getAsymmetricKey(alias)
 
